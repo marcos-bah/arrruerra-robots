@@ -14,10 +14,9 @@
 
        #################|Sintaxe:|###############################################################
        # Toda as alterações devem ser ricas em comentarios e manterem a sintaxe e semantica, com#
-       # espaçcamentos e omissao de acentuacoes.                                                #
+       # espascamentos e omissao de acentuacoes.                                                #
        ##########################################################################################
   */
-  
   
   //sensor reflexivo
   int portaAnD = 0; //D
