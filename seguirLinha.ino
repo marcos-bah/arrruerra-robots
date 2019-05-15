@@ -18,109 +18,89 @@
        ##########################################################################################
   */
   
-  //sensor reflexivo
-  int portaAnD = 0; //D
-  int portaDigD = 8; //D
-  int portaAnE = 1; //E
-  int portaDigE = 7; //E
-
-  //motor
-  int motor_esquerda_1 = 11; //direcao
-  int motor_direita_1 = 10; 
-  int motor_esquerda_2 = 12; 
-  int motor_direita_2 = 13; 
-  
-  //variaveis para armazenar valores dos sensores
-  long val = 0;
-  long val1 = 0;
-
-  //variavel para regular igualdade entre sensores
-  int reg = 50;
-
-  //variavel para armazenar a diferença entre sensores
-  int diff = 0;
-
+  /*DECLARAÇÃO DE VARIAVEIS*/
+#define MotorA_sentido1 10
+#define MotorA_sentido2 12
+#define MotorB_sentido1 11
+#define MotorB_sentido2 13
+ 
+#define veloc0 0
+#define veloc1 80
+#define veloc2 180
+#define veloc3 255
+ 
+#define Sensor_direita 3
+#define Sensor_esquerda 2
+ 
+bool direita, esquerda;
+ 
 void setup() {
-
-  Serial.begin(9600); //inicializando Serial
-
-  pinMode(portaAnD, OUTPUT); //inicializando portas dos sensores
-  pinMode(portaDigD, OUTPUT);
-  pinMode(portaAnE, OUTPUT);
-  pinMode(portaDigE, OUTPUT);
-
-  //motor
-  pinMode(motor_esquerda_1, OUTPUT); //inicializando portas dos motores
-  pinMode(motor_direita_2, OUTPUT);
-  pinMode(motor_esquerda_1, OUTPUT);
-  pinMode(motor_direita_2, OUTPUT);
-
+  Serial.begin(9600);
+  pinMode(MotorA_sentido1, OUTPUT);
+  pinMode(MotorA_sentido2, OUTPUT);
+  pinMode(MotorB_sentido1, OUTPUT);
+  pinMode(MotorB_sentido2, OUTPUT);
+  pinMode(Sensor_direita, INPUT);
+  pinMode(Sensor_esquerda, INPUT);
+  
 }
-
+ 
 void loop() {
+   //Define o sentido de rotação dos motores
+  digitalWrite(MotorA_sentido1, LOW);
+  digitalWrite(MotorA_sentido2, HIGH);
+  digitalWrite(MotorB_sentido1, HIGH);
+  digitalWrite(MotorB_sentido2, LOW);
+  
+  //Leituras dos Sensores
+  direita = digitalRead(Sensor_direita);
+  esquerda = digitalRead(Sensor_esquerda);
 
-  val = analogRead(portaAnD); //recebendo valores dos sensores analogicos
-  val1 = analogRead(portaAnE);
 
-  if (val>val1){ //calculando o diferencial entre elas
-    diff = val-val1;
-  }else{
-    diff = val1-val;
-  }
+  //viraDireita();
 
-  if (val1 < val and diff > reg) { //verificando se sensor interpreta a linha, considerando erro de igualdade
-      motor_1(1);
-      stop2();
-      Serial.println("Ligando motor 1"); //escrevendo no serial caso os motores não estejam disponiveis
-  }else{
-    if(val < val1 and diff > reg){
-       motor_2(1);
-       stop1();
-       Serial.println("Ligando motor 2");
-    }else{
-      motor_1(1);
-      motor_2(1);
-      Serial.println("Ligando os dois motores");
-    }
-  }
-
-  Serial.println(val); //escrevendo os valores lidos nos sensores analogicos
-  Serial.println(val1);
-  delay(1000);
-}
-//inicio das funcoes
-void motor_1(int direcao) //definindo direcao do motor 1
-{
-  boolean inPin1 = LOW;
-  boolean inPin2 = HIGH;
-
-  if(direcao == 1){ //caso seja 1, inverta o sentido
-    inPin1 = HIGH;
-    inPin2 = LOW;
-  }
-    digitalWrite(motor_esquerda_1, inPin1);
-    digitalWrite(motor_direita_1, inPin2);
+  
+  /*Serial.print(direita);
+  Serial.print(" || ");
+  Serial.println(esquerda);*/
+ 
+  //Rodando os motores dependendo das leituras
+ if(direita == false && esquerda == false){
+ digitalWrite(MotorA_sentido2, HIGH);
+ digitalWrite(MotorB_sentido1, HIGH);
+ Serial.println("Ligando Todos os Motores.");
+ } else if(direita == false && esquerda == true){
+ digitalWrite(MotorA_sentido2, HIGH);
+ digitalWrite(MotorB_sentido1, LOW);
+ Serial.println("Ligando motor esquerdo.");
+ }else if(direita == true && esquerda == false){
+ digitalWrite(MotorA_sentido2, LOW);
+ digitalWrite(MotorB_sentido1, HIGH);
+ delay(250);
+ Serial.println("Ligando motor direito.");
+ }else if(direita == true && esquerda == true){
+ digitalWrite(MotorA_sentido2, LOW);
+ digitalWrite(MotorB_sentido1, LOW);
+ Serial.println("Desligando Todos os Motores.");
+ }
 }
 
-void stop1(){ //parando motor 1
-    digitalWrite(motor_esquerda_1, LOW);
-    digitalWrite(motor_direita_1, LOW);
-}
+void viraDireita(){
+   digitalWrite(MotorA_sentido2, LOW);
+   digitalWrite(MotorB_sentido1, LOW);
 
-void motor_2(int direcao) //definindo direcao do motor 2
-{
-  boolean inPin10 = LOW;
-  boolean inPin20 = HIGH;
-
-  if(direcao == 1){ //caso seja 1, inverta o sentido
-    inPin10 = HIGH;
-    inPin20 = LOW;
-  }
-    digitalWrite(motor_esquerda_2, inPin10);
-    digitalWrite(motor_direita_2, inPin20);
-}
-
-void stop2(){ //parando motor 2
-    digitalWrite(motor_esquerda_2, LOW);
-    digitalWrite(motor_direita_2, LOW);
+   digitalWrite(MotorB_sentido2, HIGH);
+   digitalWrite(MotorA_sentido1, HIGH);
+   Serial.println("Re");
+   delay(100);
+   digitalWrite(MotorB_sentido2, LOW);
+   digitalWrite(MotorA_sentido1, LOW);
+   
+   delay(200);
+   
+   digitalWrite(MotorA_sentido2, HIGH);
+   delay(530);
+   Serial.println("Virando");
+   digitalWrite(MotorA_sentido2, LOW);
+   delay(2000);
 }
