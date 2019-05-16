@@ -19,10 +19,10 @@
   */
   
   /*DECLARACAO DE VARIAVEIS*/
-#define MotorA_sentido1 10
-#define MotorA_sentido2 12
-#define MotorB_sentido1 11
-#define MotorB_sentido2 13
+#define MotorA_frente 10
+#define MotorA_tras 12
+#define MotorB_frente 11
+#define MotorB_tras 13
  
 #define Sensor_direita 3
 #define Sensor_esquerda 2
@@ -31,10 +31,10 @@ bool direita, esquerda;
  
 void setup() {
   Serial.begin(9600);
-  pinMode(MotorA_sentido1, OUTPUT);
-  pinMode(MotorA_sentido2, OUTPUT);
-  pinMode(MotorB_sentido1, OUTPUT);
-  pinMode(MotorB_sentido2, OUTPUT);
+  pinMode(MotorA_tras, OUTPUT);
+  pinMode(MotorA_frente, OUTPUT);
+  pinMode(MotorB_frente, OUTPUT);
+  pinMode(MotorB_tras, OUTPUT);
   pinMode(Sensor_direita, INPUT);
   pinMode(Sensor_esquerda, INPUT);
   
@@ -42,60 +42,55 @@ void setup() {
  
 void loop() {
    //Define o sentido de rotação dos motores
-  digitalWrite(MotorA_sentido1, LOW);
-  digitalWrite(MotorA_sentido2, HIGH);
-  digitalWrite(MotorB_sentido1, HIGH);
-  digitalWrite(MotorB_sentido2, LOW);
+  digitalWrite(MotorA_tras, LOW);
+  digitalWrite(MotorA_frente, HIGH);
+  digitalWrite(MotorB_frente, HIGH);
+  digitalWrite(MotorB_tras, LOW);
   
   //Leituras dos Sensores
   direita = digitalRead(Sensor_direita);
   esquerda = digitalRead(Sensor_esquerda);
 
-
-  //viraDireita();
-
-  
   /*Serial.print(direita);
   Serial.print(" || ");
   Serial.println(esquerda);*/
  
   //Rodando os motores dependendo das leituras
  if(direita == false && esquerda == false){
- digitalWrite(MotorA_sentido2, HIGH);
- digitalWrite(MotorB_sentido1, HIGH);
+ digitalWrite(MotorA_frente, HIGH);
+ digitalWrite(MotorB_frente, HIGH);
  Serial.println("Ligando Todos os Motores.");
  } else if(direita == false && esquerda == true){
- digitalWrite(MotorA_sentido2, HIGH);
- digitalWrite(MotorB_sentido1, LOW);
+ digitalWrite(MotorA_frente, HIGH);
+ digitalWrite(MotorB_frente, LOW);
  Serial.println("Ligando motor esquerdo.");
  }else if(direita == true && esquerda == false){
- digitalWrite(MotorA_sentido2, LOW);
- digitalWrite(MotorB_sentido1, HIGH);
+ digitalWrite(MotorA_frente, LOW);
+ digitalWrite(MotorB_frente, HIGH);
  delay(250);
  Serial.println("Ligando motor direito.");
  }else if(direita == true && esquerda == true){
- digitalWrite(MotorA_sentido2, LOW);
- digitalWrite(MotorB_sentido1, LOW);
+ digitalWrite(MotorA_frente, LOW);
+ digitalWrite(MotorB_frente, LOW);
  Serial.println("Desligando Todos os Motores.");
  }
 }
 
 void viraDireita(){
-   digitalWrite(MotorA_sentido2, LOW);
-   digitalWrite(MotorB_sentido1, LOW);
+   digitalWrite(MotorA_frente, LOW);
+   digitalWrite(MotorB_frente, LOW);
 
-   digitalWrite(MotorB_sentido2, HIGH);
-   digitalWrite(MotorA_sentido1, HIGH);
+   digitalWrite(MotorB_tras, HIGH);
+   digitalWrite(MotorA_tras, HIGH);
    Serial.println("Re");
    delay(100);
-   digitalWrite(MotorB_sentido2, LOW);
-   digitalWrite(MotorA_sentido1, LOW);
+   digitalWrite(MotorB_tras, LOW);
+   digitalWrite(MotorA_tras, LOW);
    
    delay(200);
    
-   digitalWrite(MotorA_sentido2, HIGH);
-   delay(530);
+   digitalWrite(MotorA_frente, HIGH);
+   delay(530); //valor aproximado para angulacao de 90*
    Serial.println("Virando");
-   digitalWrite(MotorA_sentido2, LOW);
-   delay(2000);
+   digitalWrite(MotorA_frente, LOW);
 }
