@@ -18,16 +18,11 @@
        ##########################################################################################
   */
   
-  /*DECLARAÇÃO DE VARIAVEIS*/
+  /*DECLARACAO DE VARIAVEIS*/
 #define MotorA_sentido1 10
 #define MotorA_sentido2 12
 #define MotorB_sentido1 11
 #define MotorB_sentido2 13
- 
-#define veloc0 0
-#define veloc1 80
-#define veloc2 180
-#define veloc3 255
  
 #define Sensor_direita 3
 #define Sensor_esquerda 2
