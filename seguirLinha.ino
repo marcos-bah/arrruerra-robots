@@ -25,9 +25,12 @@
 #define Sensor_direita 3
 #define Sensor_esquerda 2
 #define Sensor_LDR A5
+#define ledVerde 6
+#define ledVermelho 7
  
 bool direita, esquerda;
 int centro, soma;
+float branco, preta;
  
 void setup() {
   Serial.begin(9600);
@@ -37,10 +40,37 @@ void setup() {
   pinMode(MotorB_tras, OUTPUT);
   pinMode(Sensor_direita, INPUT);
   pinMode(Sensor_esquerda, INPUT);
+  pinMode(ledVerde, OUTPUT);
+  pinMode(ledVermelho, OUTPUT);
 }
  
 void loop() {
-   //Define o sentido de rotação dos motores
+   //Calibrando
+    char dados  = "";
+    if(Serial.available () > 0){
+      dados = Serial.read();
+      if(dados == "b"){
+        Serial.println(dados);
+        digitalWrite(ledVerde, HIGH);
+        delay(2000);
+        branco = calibrarBranco();
+        Serial.println("Calibrado Linha Branca: ");
+        Serial.print(branco);
+        Serial.println("");
+        digitalWrite(ledVerde, LOW);
+      }
+      if(dados == "p"){
+          digitalWrite(ledVermelho, HIGH);
+          delay(2000);
+          preta = calibrarPreta();
+          Serial.println("Calibrado Linha Preta: ");
+          Serial.print(preta);
+          Serial.println("");
+          digitalWrite(ledVermelho, LOW);
+          digitalWrite(ledVerde, HIGH);
+      }
+    }
+  //Define o sentido de rotação dos motores
   digitalWrite(MotorA_tras, LOW);
   digitalWrite(MotorA_frente, HIGH);
   digitalWrite(MotorB_frente, HIGH);
@@ -51,14 +81,10 @@ void loop() {
   esquerda = digitalRead(Sensor_esquerda);
   centro = analogRead(Sensor_LDR);
 
-
   Serial.print(direita);
   Serial.print(" || ");
   Serial.println(esquerda);
-  Serial.println("Calibrando: ");
-  Serial.print(calibrar());
-  Serial.println("");
-  delay(2000);
+
    
   //Rodando os motores dependendo das leituras
  if(direita == false && esquerda == false){
@@ -100,11 +126,20 @@ void viraEsquerda(){
    digitalWrite(MotorA_frente, LOW);
 }
 
-int calibrar(){
+int calibrarBranco(){
   soma = 0;
   for(int i = 0; i<10; i++){
     soma += analogRead(Sensor_LDR);
     delay(100);
   }
-  return (soma/5)*0.2;
+  return (soma/5)*1.2;
+}
+
+int calibrarPreta(){
+  soma = 0;
+  for(int i = 0; i<10; i++){
+    soma += analogRead(Sensor_LDR);
+    delay(100);
+  }
+  return (soma/5);
 }
