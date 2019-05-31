@@ -1,17 +1,15 @@
-  //Programa em desenvolvimento
+//Programa em desenvolvimento
 
   /*
     IFSULDEMINAS - Campus Avançado Carmo de Minas
     Criado por: Marcos Barbosa
     Equipe: Marcos Barbosa, Pedro, Murilo Rocha, Julia Almeida.
     Participação na elaboração do Projeto: Juliete Costa, Isabel Bento (Docentes) - Mariana Barcelar, Emannuel (Discentes)
-
     Obs.:
        #################|Wiki:|##################################################################
        # Direita ou Esquerda simbolizam a direção (Norte ou Sul, sendo o norte o bico do robo). #
        # D ou E significam respectivamente Direita e Esquerda.                                  #
        ##########################################################################################
-
        #################|Sintaxe:|###############################################################
        # Toda as alterações devem ser ricas em comentarios e manterem a sintaxe e semantica, com#
        # espascamentos e omissao de acentuacoes.                                                #
@@ -26,8 +24,10 @@
  
 #define Sensor_direita 3
 #define Sensor_esquerda 2
+#define Sensor_LDR A5
  
 bool direita, esquerda;
+int centro, soma;
  
 void setup() {
   Serial.begin(9600);
@@ -37,7 +37,6 @@ void setup() {
   pinMode(MotorB_tras, OUTPUT);
   pinMode(Sensor_direita, INPUT);
   pinMode(Sensor_esquerda, INPUT);
-  
 }
  
 void loop() {
@@ -50,11 +49,17 @@ void loop() {
   //Leituras dos Sensores
   direita = digitalRead(Sensor_direita);
   esquerda = digitalRead(Sensor_esquerda);
+  centro = analogRead(Sensor_LDR);
 
-  /*Serial.print(direita);
+
+  Serial.print(direita);
   Serial.print(" || ");
-  Serial.println(esquerda);*/
- 
+  Serial.println(esquerda);
+  Serial.println("Calibrando: ");
+  Serial.print(calibrar());
+  Serial.println("");
+  delay(2000);
+   
   //Rodando os motores dependendo das leituras
  if(direita == false && esquerda == false){
  digitalWrite(MotorA_frente, HIGH);
@@ -76,7 +81,7 @@ void loop() {
  }
 }
 
-void viraDireita(){
+void viraEsquerda(){
    digitalWrite(MotorA_frente, LOW);
    digitalWrite(MotorB_frente, LOW);
 
@@ -93,4 +98,13 @@ void viraDireita(){
    delay(530); //valor aproximado para angulacao de 90*
    Serial.println("Virando");
    digitalWrite(MotorA_frente, LOW);
+}
+
+int calibrar(){
+  soma = 0;
+  for(int i = 0; i<10; i++){
+    soma += analogRead(Sensor_LDR);
+    delay(100);
+  }
+  return (soma/5)*0.2;
 }
