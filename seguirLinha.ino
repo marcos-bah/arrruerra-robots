@@ -1,3 +1,5 @@
+#include <Ultrasonic.h>
+
 //Programa em desenvolvimento
 
   /*
@@ -27,10 +29,16 @@
 #define Sensor_LDR A5
 #define ledVerde 6
 #define ledVermelho 7
+
+#define pino_trigger 9
+#define pino_echo 8
  
 bool direita, esquerda, dce;
 int centro, soma;
 float branco, preta;
+long cmMsec;
+
+Ultrasonic ultrassom(pino_trigger,pino_echo);
  
 void setup() {
   Serial.begin(9600);
@@ -47,6 +55,11 @@ void setup() {
 }
  
 void loop() {
+  //ultra
+  cmMsec = ultrassom.Ranging(CM);
+  Serial.println("Distancia em cm: ");
+  Serial.println(cmMsec);
+  
   //Define o sentido de rotação dos motores
   digitalWrite(MotorA_tras, LOW);
   digitalWrite(MotorA_frente, HIGH);
@@ -60,8 +73,8 @@ void loop() {
 
   Serial.print(direita);
   Serial.print(" || ");
-  Serial.println(esquerda);
-   Serial.print(" || ");
+  Serial.print(esquerda);
+  Serial.print(" || ");
   Serial.println(centro);
 
   if(centro>500){
@@ -72,8 +85,8 @@ void loop() {
     dce = false;
   }
 
-
- //Rodando os motores dependendo das leituras
+if(cmMsec>25){
+   //Rodando os motores dependendo das leituras
  if(direita == false && esquerda == false && dce == true){ //centro deve estar encima da linha 
      digitalWrite(MotorA_frente, HIGH);
      digitalWrite(MotorB_frente, HIGH);
@@ -99,6 +112,13 @@ void loop() {
  }else{
   Serial.println("Cena não esperada ou erro");
  }
+}else{
+  Serial.println("Desviando de obstaculo");
+}
+
+ digitalWrite(MotorB_frente, LOW);
+ digitalWrite(MotorA_frente, LOW);
+ delay(50);
 }
 
 int calibrarBranco(){
