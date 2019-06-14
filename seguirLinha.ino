@@ -28,7 +28,7 @@
 #define ledVerde 6
 #define ledVermelho 7
  
-bool direita, esquerda;
+bool direita, esquerda, dce;
 int centro, soma;
 float branco, preta;
  
@@ -42,34 +42,11 @@ void setup() {
   pinMode(Sensor_esquerda, INPUT);
   pinMode(ledVerde, OUTPUT);
   pinMode(ledVermelho, OUTPUT);
+  digitalWrite(ledVerde, LOW);
+  digitalWrite(ledVermelho, LOW);
 }
  
 void loop() {
-   //Calibrando
-    char dados  = "";
-    if(Serial.available () > 0){
-      dados = Serial.read();
-      if(dados == "b"){
-        Serial.println(dados);
-        digitalWrite(ledVerde, HIGH);
-        delay(2000);
-        branco = calibrarBranco();
-        Serial.println("Calibrado Linha Branca: ");
-        Serial.print(branco);
-        Serial.println("");
-        digitalWrite(ledVerde, LOW);
-      }
-      if(dados == "p"){
-          digitalWrite(ledVermelho, HIGH);
-          delay(2000);
-          preta = calibrarPreta();
-          Serial.println("Calibrado Linha Preta: ");
-          Serial.print(preta);
-          Serial.println("");
-          digitalWrite(ledVermelho, LOW);
-          digitalWrite(ledVerde, HIGH);
-      }
-    }
   //Define o sentido de rotação dos motores
   digitalWrite(MotorA_tras, LOW);
   digitalWrite(MotorA_frente, HIGH);
@@ -84,46 +61,44 @@ void loop() {
   Serial.print(direita);
   Serial.print(" || ");
   Serial.println(esquerda);
+   Serial.print(" || ");
+  Serial.println(centro);
 
-   
-  //Rodando os motores dependendo das leituras
- if(direita == false && esquerda == false){
- digitalWrite(MotorA_frente, HIGH);
- digitalWrite(MotorB_frente, HIGH);
- Serial.println("Ligando Todos os Motores.");
- } else if(direita == false && esquerda == true){
- digitalWrite(MotorA_frente, HIGH);
- digitalWrite(MotorB_frente, LOW);
- Serial.println("Ligando motor esquerdo.");
- }else if(direita == true && esquerda == false){
- digitalWrite(MotorA_frente, LOW);
- digitalWrite(MotorB_frente, HIGH);
- delay(250);
- Serial.println("Ligando motor direito.");
- }else if(direita == true && esquerda == true){
- digitalWrite(MotorA_frente, LOW);
- digitalWrite(MotorB_frente, LOW);
- Serial.println("Desligando Todos os Motores.");
+  if(centro>500){
+    digitalWrite(ledVerde, HIGH);
+    dce = true;
+  }else{
+    digitalWrite(ledVerde, LOW);
+    dce = false;
+  }
+
+
+ //Rodando os motores dependendo das leituras
+ if(direita == false && esquerda == false && dce == true){ //centro deve estar encima da linha 
+     digitalWrite(MotorA_frente, HIGH);
+     digitalWrite(MotorB_frente, HIGH);
+     Serial.println("Ligando Todos os Motores.");
+ }else if(direita == false && esquerda == true && dce == true){ //centro deve estar encima da linha 
+     digitalWrite(MotorA_frente, HIGH);
+     digitalWrite(MotorB_frente, LOW);
+     Serial.println("Ligando motor esquerdo.");
+ }else if(direita == true && esquerda == false && dce == true){ //centro deve estar encima da linha 
+     digitalWrite(MotorA_frente, LOW);
+     digitalWrite(MotorB_frente, HIGH);
+     Serial.println("Ligando motor direito.");
+ }else if(direita == true && esquerda == true && dce == true){ //centro deve estar encima da linha 
+     digitalWrite(MotorA_frente, HIGH);
+     digitalWrite(MotorB_frente, HIGH);
+     Serial.println("Ligando Todos os Motores.");
+ }else if(direita == false && esquerda == false && dce == false){ //arena ou erro
+      Serial.println("Arena ou Erro.");
+ }else if(direita == false && esquerda == true && dce == true){ //virar 90* not work
+      Serial.println("Virar");
+ }else if(direita == true && esquerda == false && dce == true){ //virar 90* not work
+      Serial.println("Virar");
+ }else{
+  Serial.println("Cena não esperada ou erro");
  }
-}
-
-void viraEsquerda(){
-   digitalWrite(MotorA_frente, LOW);
-   digitalWrite(MotorB_frente, LOW);
-
-   digitalWrite(MotorB_tras, HIGH);
-   digitalWrite(MotorA_tras, HIGH);
-   Serial.println("Re");
-   delay(100);
-   digitalWrite(MotorB_tras, LOW);
-   digitalWrite(MotorA_tras, LOW);
-   
-   delay(200);
-   
-   digitalWrite(MotorA_frente, HIGH);
-   delay(530); //valor aproximado para angulacao de 90*
-   Serial.println("Virando");
-   digitalWrite(MotorA_frente, LOW);
 }
 
 int calibrarBranco(){
